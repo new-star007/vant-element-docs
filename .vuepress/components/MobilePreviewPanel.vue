@@ -33,7 +33,7 @@
 import { computed, ref } from 'vue'
 import { useRoute } from 'vuepress/client'
 
-const DEMO_BASE = 'http://localhost:8080'
+const DEMO_BASE = 'https://new-star007.github.io/vant-element-examples'
 
 const EXAMPLE_ROUTES: Record<string, string> = {
   'list': 'list-demo',

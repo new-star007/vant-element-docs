@@ -32,7 +32,7 @@ const props = withDefaults(defineProps<{
   baseUrl?: string
   label?: string
 }>(), {
-  baseUrl: 'http://localhost:8080',
+  baseUrl: 'https://new-star007.github.io/vant-element-examples',
   label: '移动端预览',
 })
 
