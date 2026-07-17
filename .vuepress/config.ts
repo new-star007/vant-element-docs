@@ -27,6 +27,7 @@ export default defineUserConfig({
       { text: '指南', link: '/guide/' },
       { text: '组件', link: '/components/' },
       { text: '示例', link: '/examples/' },
+      { text: '在线体验', link: 'https://new-star007.github.io/vant-element-examples/' },
     ],
 
     sidebarDepth: 0,
