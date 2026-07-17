@@ -20,7 +20,7 @@ export default defineUserConfig({
   theme: defaultTheme({
     logo: '/logo.png',
     repo: 'https://github.com/new-star007/vant-element',
-    docsDir: 'docs',
+    docsDir: 'vant-element-docs',
 
     navbar: [
       { text: '首页', link: '/' },
