@@ -1,26 +1,28 @@
 <template>
-  <div v-if="showPanel" class="mp-panel">
-    <div class="mp-phone">
-      <div class="mp-notch"></div>
-      <div class="mp-statusbar">
-        <span class="mp-time">{{ time }}</span>
-        <div class="mp-icons">
-          <svg width="16" height="12" viewBox="0 0 18 12"><rect x="0.5" y="1.5" width="17" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="3" y="4" width="12" height="4" rx="0.5" fill="currentColor"/></svg>
+  <div v-if="showPanel" class="mp-overlay">
+    <div class="mp-device">
+      <div class="mp-device-inner">
+        <div class="mp-earpiece"></div>
+        <div class="mp-statusbar">
+          <span class="mp-time">{{ time }}</span>
+          <div class="mp-status-icons">
+            <svg width="16" height="12" viewBox="0 0 18 12"><rect x="0.5" y="1.5" width="17" height="9" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.2"/><rect x="3" y="4" width="12" height="4" rx="0.5" fill="currentColor"/></svg>
+          </div>
         </div>
-      </div>
-      <div class="mp-screen">
-        <iframe
-          v-if="demoUrl"
-          :src="demoUrl"
-          class="mp-iframe"
-          frameborder="0"
-          loading="lazy"
-          allow="clipboard-read; clipboard-write"
-        />
-        <div v-else class="mp-placeholder">暂无演示</div>
-      </div>
-      <div class="mp-home">
-        <div class="mp-home-bar"></div>
+        <div class="mp-screen">
+          <iframe
+            ref="iframeRef"
+            :src="currentUrl"
+            class="mp-iframe"
+            frameborder="0"
+            loading="lazy"
+            allow="clipboard-read; clipboard-write"
+          />
+          <div v-if="!currentUrl" class="mp-placeholder">暂无演示</div>
+        </div>
+        <div class="mp-home">
+          <div class="mp-home-indicator"></div>
+        </div>
       </div>
     </div>
     <p class="mp-label">移动端预览</p>
@@ -28,121 +30,214 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUnmounted } from 'vue'
-import { useRoute } from 'vuepress/client'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import { useRoute, useRouter } from 'vuepress/client'
 
-const DEMO_BASE = 'https://new-star007.github.io/vant-element-examples'
+const DEMO_BASE = import.meta.env.PROD
+  ? 'https://new-star007.github.io/vant-element-examples'
+  : 'http://localhost:8080'
 
-const EXAMPLE_ROUTES: Record<string, string> = {
+const ROUTE_MAP: Record<string, string> = {
   'list': 'list-demo',
   'list-page': 'list-page',
   'user-list': 'list',
   'user-table': 'user-table',
 }
 
+const REVERSE_ROUTE_MAP: Record<string, string> = {
+  'list-demo': '/components/list-demo.html',
+  'list-page': '/components/list-page.html',
+  'list': '/examples/user-list.html',
+  'user-table': '/examples/user-table.html',
+}
+
+function showPanelFor(path: string): boolean {
+  return /^\/(components|examples)(\/|$)/.test(path)
+}
+
+function getDemoRouteName(path: string): string {
+  const match = path.match(/^\/(?:components|examples)\/([^/.]+)/)
+  if (!match) return 'home'
+  return ROUTE_MAP[match[1]] || match[1]
+}
+
+function getDocPath(demoPath: string): string {
+  if (!demoPath) return ''
+  if (demoPath === '/' || demoPath === '/home') return '/components/'
+  return REVERSE_ROUTE_MAP[demoPath.slice(1)] || `/components${demoPath}.html`
+}
+
 const route = useRoute()
+const router = useRouter()
+const showPanel = computed(() => showPanelFor(route.path))
+const iframeRef = ref<HTMLIFrameElement>()
 const time = ref('09:41')
+const currentUrl = ref(DEMO_BASE + '/#/' + getDemoRouteName(route.path))
 let timer: ReturnType<typeof setInterval> | undefined
 
 function updateTime() {
   time.value = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
 }
 
-const showPanel = computed(() => {
-  const path = route.path
-  return /^\/(components|examples)\/[^/]+(\.html)?$/.test(path)
-})
+function updatePagePadding(show: boolean) {
+  if (import.meta.env.SSR) return
+  document.body.classList.toggle('mp-has-preview', show)
+}
 
-const demoUrl = computed(() => {
-  const path = route.path
-  const match = path.match(/^\/(?:components|examples)\/([^/.]+)/)
-  if (!match) return ''
-  const name = match[1]
-  const routePath = EXAMPLE_ROUTES[name] || name
-  return `${DEMO_BASE}/#/${routePath}`
-})
+function navigateIframe(name: string) {
+  if (!name) return
+  const iframe = iframeRef.value
+  if (iframe?.contentWindow?.postMessage) {
+    try { iframe.contentWindow.postMessage({ type: 'navigate', path: '/' + name }, '*') } catch { /* ignore */ }
+  }
+}
+
+function navigateTo(path: string) {
+  updatePagePadding(showPanel.value)
+  const name = getDemoRouteName(path)
+  if (!name) return
+  currentUrl.value = `${DEMO_BASE}/#/${name}`
+  navigateIframe(name)
+}
+
+function handleIframeMessage(ev: MessageEvent) {
+  if (ev.data?.type !== 'navigate') return
+  const docPath = getDocPath(ev.data.path)
+  if (!docPath || docPath === route.path) return
+  router.push(docPath).catch(function () {})
+}
+
+watch(() => route.path, navigateTo)
 
 onMounted(() => {
   updateTime()
   timer = setInterval(updateTime, 30000)
+  window.addEventListener('message', handleIframeMessage)
+  navigateTo(route.path)
 })
 
 onUnmounted(() => {
+  updatePagePadding(false)
+  window.removeEventListener('message', handleIframeMessage)
   if (timer) clearInterval(timer)
 })
 </script>
 
 <style>
-@media (min-width: 1200px) {
-  .vp-page {
-    padding-right: 400px !important;
+body.mp-has-preview .vp-page {
+  padding-right: 420px !important;
+}
+@media (max-width: 1344px) {
+  body.mp-has-preview .vp-page {
+    padding-right: 380px !important;
   }
 }
 
-.mp-panel {
+.mp-overlay {
   position: fixed;
-  right: 20px;
+  right: 24px;
   top: 80px;
   width: 375px;
   z-index: 100;
-  pointer-events: auto;
 }
 
-.mp-phone {
-  width: 100%;
-  background: #1a1a1a;
-  border-radius: 40px;
-  padding: 12px;
+.mp-device {
+  background: linear-gradient(145deg, #1a1a1a, #222);
+  border-radius: 44px;
+  padding: 14px;
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.06),
+    0 30px 60px rgba(0,0,0,0.35),
+    0 0 80px rgba(0,0,0,0.1);
   position: relative;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
 }
 
-.mp-notch {
+.mp-device::before {
+  content: '';
   position: absolute;
-  top: 12px;
+  left: -4px;
+  top: 22%;
+  width: 4px;
+  height: 36px;
+  background: #333;
+  border-radius: 2px;
+}
+
+.mp-device::after {
+  content: '';
+  position: absolute;
+  right: -4px;
+  top: 26%;
+  width: 4px;
+  height: 48px;
+  background: #333;
+  border-radius: 2px;
+}
+
+.mp-device-inner {
+  background: #fff;
+  border-radius: 32px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.mp-earpiece {
+  position: absolute;
+  top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 150px;
-  height: 28px;
+  width: 120px;
+  height: 26px;
   background: #1a1a1a;
-  border-radius: 0 0 16px 16px;
-  z-index: 1;
+  border-radius: 0 0 14px 14px;
+  z-index: 10;
+}
+
+.mp-earpiece::after {
+  content: '';
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 40px;
+  height: 4px;
+  background: #333;
+  border-radius: 2px;
 }
 
 .mp-statusbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 20px 4px;
-  color: #fff;
+  padding: 12px 22px 4px;
+  color: #333;
   font-size: 12px;
   font-weight: 600;
 }
 
-.mp-icons {
+.mp-status-icons {
   display: flex;
   align-items: center;
-  opacity: 0.8;
+  opacity: 0.6;
 }
 
 .mp-screen {
-  background: #fff;
-  border-radius: 24px;
-  overflow: hidden;
   position: relative;
-  z-index: 0;
-  margin-top: -10px;
+  min-height: 220px;
 }
 
 .mp-iframe {
   display: block;
   width: 100%;
   height: 667px;
-  max-height: 80vh;
+  max-height: 75vh;
 }
 
 .mp-placeholder {
-  height: 200px;
+  position: absolute;
+  inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -153,13 +248,13 @@ onUnmounted(() => {
 .mp-home {
   display: flex;
   justify-content: center;
-  padding: 8px 0 4px;
+  padding: 8px 0 10px;
 }
 
-.mp-home-bar {
+.mp-home-indicator {
   width: 120px;
   height: 4px;
-  background: rgba(255,255,255,0.3);
+  background: #ddd;
   border-radius: 2px;
 }
 
@@ -171,8 +266,11 @@ onUnmounted(() => {
 }
 
 @media (max-width: 1199px) {
-  .mp-panel {
+  .mp-overlay {
     display: none !important;
+  }
+  body.mp-has-preview .vp-page {
+    padding-right: 0 !important;
   }
 }
 </style>
