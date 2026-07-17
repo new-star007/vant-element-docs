@@ -5,8 +5,8 @@
 `vant-element` 基于 `vant` 构建，需要确保项目中已安装 `vant`：
 
 ```bash
-# 如果项目还没有 vant
-npm install vant vant-element
+# 如果项目还没有 vant（vant-element 基于 Vant 2）
+npm install vant@latest-v2 vant-element
 ```
 
 > 如果你的项目已安装 `vant`，只需额外安装 `vant-element` 即可。
