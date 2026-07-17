@@ -1,5 +1,5 @@
 import { defineUserConfig } from 'vuepress'
-import { webpackBundler } from '@vuepress/bundler-webpack'
+import { viteBundler } from '@vuepress/bundler-vite'
 import { defaultTheme } from '@vuepress/theme-default'
 import { searchPlugin } from '@vuepress/plugin-search'
 import { gitPlugin } from '@vuepress/plugin-git'
@@ -10,7 +10,7 @@ export default defineUserConfig({
   description: '基于 Vant 的 Element-UI 兼容组件库',
   base: '/vant-element-docs/',
 
-  bundler: webpackBundler(),
+  bundler: viteBundler(),
 
   head: [
     ['link', { rel: 'icon', href: '/vant-element-docs/icon.png' }],

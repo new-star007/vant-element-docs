@@ -4,11 +4,11 @@
 
 ## 示例列表
 
-| 示例 | 描述 | 在线预览 |
-|------|------|----------|
-| [List 列表演示](./list.md) | 基于 `el-list` 组件的多种列表形态演示 | <MobilePreview src="/#/list-demo" /> |
-| [UserList 用户列表](./user-list.md) | 基于 `el-list-page` 组件的用户管理列表示例 | <MobilePreview src="/#/list" /> |
-| [UserTable 用户表格](./user-table.md) | 基于 `el-table` 组件的用户管理表格示例 | <MobilePreview src="/#/user-table" /> |
+| 示例 | 描述 |
+|------|------|
+| [List 列表演示](./list.md) | 基于 `el-list` 组件的多种列表形态演示 |
+| [UserList 用户列表](./user-list.md) | 基于 `el-list-page` 组件的用户管理列表示例 |
+| [UserTable 用户表格](./user-table.md) | 基于 `el-table` 组件的用户管理表格示例 |
 
 ## 功能对比
 
@@ -33,6 +33,4 @@
 
 ## 使用方式
 
-1. 点击上方链接查看完整代码
-2. 右侧模拟器可实时预览效果
-3. 复制代码到您的项目中使用
+点击上方链接查看完整代码，复制代码到您的项目中使用。
