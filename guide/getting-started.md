@@ -2,17 +2,25 @@
 
 ## 安装
 
+`vant-element` 基于 `vant` 构建，需要确保项目中已安装 `vant`：
+
 ```bash
-npm install vant-element
+# 如果项目还没有 vant
+npm install vant vant-element
 ```
+
+> 如果你的项目已安装 `vant`，只需额外安装 `vant-element` 即可。
 
 ## 完整引入
 
 ```js
 import Vue from 'vue'
+import Vant from 'vant'
+import 'vant/lib/index.css'
 import VantElement from 'vant-element'
 import 'vant-element/dist/vant-element.css'
 
+Vue.use(Vant)
 Vue.use(VantElement)
 ```
 
@@ -22,44 +30,17 @@ Vue.use(VantElement)
 
 ```js
 import Vue from 'vue'
+import Vant from 'vant'
+import 'vant/lib/index.css'
 import { ElButton, ElDialog } from 'vant-element'
 import 'vant-element/dist/vant-element.css'
 
+Vue.use(Vant)
 Vue.use(ElButton)
 Vue.use(ElDialog)
 ```
 
 按需引入时，需要单独调用 `Vue.component()` 注册使用的组件。全局方法（`$message` 等）需通过完整引入或手动挂载。
-
-## 自动按需引入（推荐）
-
-配合 [babel-plugin-import](https://github.com/umijs/babel-plugin-import) 可实现自动按需引入：
-
-```bash
-npm install babel-plugin-import -D
-```
-
-在 `babel.config.js` 中添加：
-
-```js
-module.exports = {
-  plugins: [
-    ['import', {
-      libraryName: 'vant-element',
-      libraryDirectory: 'dist',
-      style: 'css'
-    }]
-  ]
-}
-```
-
-使用时直接引入组件即可，无需手动注册：
-
-```js
-import { ElButton, ElInput } from 'vant-element'
-
-// 无需 Vue.use()，babel 插件会自动处理
-```
 
 ## 可用组件一览
 
