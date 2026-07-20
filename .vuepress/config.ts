@@ -19,7 +19,8 @@ export default defineUserConfig({
 
   theme: defaultTheme({
     logo: '/logo.png',
-    repo: 'https://github.com/new-star007/vant-element-docs',
+    repo: 'https://github.com/new-star007/vant-element',
+    docsRepo: 'https://github.com/new-star007/vant-element-docs',
     docsDir: '',
 
     navbar: [
