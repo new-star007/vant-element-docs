@@ -45,7 +45,7 @@ const ROUTE_MAP: Record<string, string> = {
 }
 
 const REVERSE_ROUTE_MAP: Record<string, string> = {
-  'list-demo': '/components/list-demo.html',
+  'list-demo': '/components/list.html',
   'list-page': '/components/list-page.html',
   'list': '/examples/user-list.html',
   'user-table': '/examples/user-table.html',
