@@ -25,8 +25,7 @@ Vant Element 提供了丰富的 UI 组件，覆盖常见的移动端开发场景
 | [Radio 单选框](./radio.html) | `van-radio` + `van-radio-group` | 一组备选项中进行单选 |
 | [Checkbox 多选框](./checkbox.html) | `van-checkbox` + `van-checkbox-group` | 一组备选项中进行多选 |
 | [Select 选择器](./select.html) | `van-popup` + `van-picker` + `van-search` | 当选项过多时使用下拉菜单选择 |
-| [Cascader 级联选择器](./cascader.html) | `van-popup` + `van-tabs` + `van-tag` + `van-search` | 逐级查看并选择层级数据 |
-| [CascaderPanel 级联面板](./cascader-panel.html) | `van-tabs` + `van-tab` + `van-icon` | 级联选择器的核心面板 |
+| [Cascader 级联选择器](./cascader.html) | `van-popup` + `van-tabs` + `van-tag` + `van-search` | 逐级查看并选择层级数据（含 CascaderPanel 独立面板） |
 | [Switch 开关](./switch.html) | `van-switch` | 表示两种相互对立状态间的切换 |
 | [Slider 滑块](./slider.html) | `van-slider` | 在固定区间内进行选择 |
 | [DatePicker 日期选择器](./date-picker.html) | `van-popup` + `van-datetime-picker` | 用于选择日期 |

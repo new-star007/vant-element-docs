@@ -57,6 +57,7 @@ export default defineUserConfig({
             '/components/divider.md',
             '/components/link.md',
             '/components/spinner.md',
+            '/components/infinite-scroll.md',
           ],
         },
         {
